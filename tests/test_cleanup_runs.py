@@ -241,6 +241,22 @@ class SafetyTests(Sandbox):
         after = sorted(os.listdir(self.sessions)) + sorted(os.listdir(self.projects))
         self.assertEqual(before, after)
 
+    def test_retention_reminder(self):
+        self.run_()
+        _, out = self.text("--routine", "nightly", "--keep", "0")
+        self.assertIn("cleanupPeriodDays is 30 (the default)", out)
+        with open(os.path.join(self.claude, "settings.json"), "w") as fh:
+            json.dump({"cleanupPeriodDays": 3650, "desktopSessionCleanupPeriodDays": 14}, fh)
+        _, out = self.text("--routine", "nightly", "--keep", "0")
+        self.assertNotIn("cleanupPeriodDays is", out)
+        self.assertIn("desktopSessionCleanupPeriodDays is 14", out)
+        with open(os.path.join(self.claude, "settings.json"), "w") as fh:
+            json.dump({"cleanupPeriodDays": 3650}, fh)
+        _, out = self.text("--routine", "nightly", "--keep", "0")
+        self.assertNotIn("RETENTION", out)
+        _, p = self.plan("--routine", "nightly", "--keep", "0")
+        self.assertEqual(p["retentionNotes"], [])
+
     def test_text_output(self):
         self.run_()
         self.run_(messages=[user("hello")])

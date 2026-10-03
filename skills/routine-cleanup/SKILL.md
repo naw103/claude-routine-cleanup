@@ -70,7 +70,11 @@ entries such as skill loads and loop prompts, `<system-reminder>`,
    short `reason` such as "routine-cleanup: <id>, keep newest N". Several calls can be
    sent at once so the cards arrive together. Report what each call deleted and
    skipped (the app skips runs that are working, pinned, or open on screen).
-6. **Verify.** Re-run the plan. Deleted runs no longer appear, and the app's Runs list
+6. **Retention tip.** If the plan printed a RETENTION note, pass it on once: Claude Code's
+   `cleanupPeriodDays` (default 30) deletes old session history by age; raising it to 3650
+   and pruning routine runs with this skill keeps the sessions that matter. Never edit the
+   user's settings yourself unless they ask.
+7. **Verify.** Re-run the plan. Deleted runs no longer appear, and the app's Runs list
    has already updated; no restart needed.
 
 ## Examples

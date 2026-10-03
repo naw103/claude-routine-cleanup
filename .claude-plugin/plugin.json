@@ -1,7 +1,7 @@
 {
   "name": "routine-cleanup",
   "displayName": "Routine Cleanup",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Bulk-delete old runs of a Claude Code scheduled task (routine) in the Claude desktop app, keeping the newest N and every run you replied in.",
   "author": {
     "name": "Nick Woodhead",

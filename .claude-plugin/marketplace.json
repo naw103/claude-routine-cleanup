@@ -10,7 +10,7 @@
       "name": "routine-cleanup",
       "source": "./",
       "description": "Bulk-delete old runs of a Claude Code scheduled task (routine), keeping the newest N and every run you replied in.",
-      "version": "1.0.0"
+      "version": "1.1.0"
     }
   ]
 }

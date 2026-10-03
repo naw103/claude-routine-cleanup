@@ -15,6 +15,34 @@ Until now, the only way to remove them was one click at a time.
 - **Deletes through the desktop app itself**, so the Runs list updates
   immediately, instead of leaving "Session not found on disk" ghosts behind.
 
+## First: stop the 30-day expiry from deleting your history
+
+Claude Code already deletes old session data on its own. Anything under `~/.claude`
+older than [`cleanupPeriodDays`](https://code.claude.com/docs/en/claude-directory#cleaned-up-automatically)
+is swept: transcripts, subagent transcripts, checkpoint snapshots, plans. The default is
+**30 days**, so a terminal session you want to resume or search next month is gone.
+
+Desktop app sessions (including routine runs) are kept at any age since Claude Code
+v2.1.248, unless you set `desktopSessionCleanupPeriodDays`. Earlier versions deleted
+them after `cleanupPeriodDays` too, and the sweep removes only the transcript, not the
+app's Runs entry. That leaves runs you can no longer open, which this skill reports as
+"unverifiable".
+
+An age cutoff can't tell the sessions you care about from routine noise, so it deletes
+both. We recommend turning the expiry up so nothing is lost to age, and pruning routine
+runs with this skill instead:
+
+```json
+// ~/.claude/settings.json
+{ "cleanupPeriodDays": 3650 }
+```
+
+Leave `desktopSessionCleanupPeriodDays` unset. (`0` is not "keep forever": Claude Code
+rejects it. The minimum is 1.) The planner prints a reminder when your setting is
+below a year.
+
+## What a plan looks like
+
 ```
 Routine        : Nightly report
 scheduledTaskId: nightly-report
@@ -93,6 +121,30 @@ Two things learned the hard way, so you don't have to:
    only *plans*; Claude deletes through the app's own `delete_session` tool.
 2. **That tool is off inside routine runs**, and accepts 25 sessions per call. So the
    skill runs from a normal conversation and works in batches of 25.
+
+## Known limitation: 25 runs per approval
+
+The desktop app's delete tool accepts at most 25 sessions per call, and every call
+shows its own approval card. That limit is the app's, not this skill's, and there is
+no way around it: deleting the files directly is exactly what leaves the ghost entries
+described above.
+
+In practice:
+
+| Runs to delete | Approval cards |
+| --- | --- |
+| 100 | 4 |
+| 571 | 23 |
+| 1,338 | 54 |
+
+To make it less tedious, Claude sends several batches at once, so the cards arrive
+together and you can approve them one after another without waiting between them.
+The plan tells you the batch count up front, so you know how many clicks it will be
+before you start. Runs only pile up this far once; after the first cleanup, running
+it every few weeks keeps it to a card or two.
+
+If you know a way to delete more per call, or Anthropic raises the limit, please
+open an issue.
 
 ## The planner on its own
 

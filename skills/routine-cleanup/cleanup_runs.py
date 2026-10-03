@@ -38,7 +38,7 @@ import json
 import os
 import sys
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 BATCH_SIZE = 25  # delete_session's per-call limit
 DEFAULT_LIVE_WINDOW_MIN = 15
@@ -70,6 +70,37 @@ def app_dir():
     if os.name == "nt":
         return os.path.join(os.environ.get("APPDATA") or os.path.join(home, "AppData", "Roaming"), "Claude")
     return os.path.join(os.environ.get("XDG_CONFIG_HOME") or os.path.join(home, ".config"), "Claude")
+
+
+RETENTION_ADVICE_DAYS = 365
+
+
+def retention_note():
+    """A reminder when Claude Code's age-based sweep will delete history soon.
+
+    cleanupPeriodDays (default 30) deletes transcripts, checkpoints and more for
+    every session older than it. Desktop sessions are exempt since v2.1.248 unless
+    desktopSessionCleanupPeriodDays is set.
+    """
+    try:
+        with open(os.path.join(claude_dir(), "settings.json"), encoding="utf-8") as fh:
+            settings = json.load(fh)
+    except (OSError, ValueError):
+        settings = {}
+    if not isinstance(settings, dict):
+        settings = {}
+    days = settings.get("cleanupPeriodDays", 30)
+    desk = settings.get("desktopSessionCleanupPeriodDays")
+    notes = []
+    if isinstance(days, (int, float)) and days < RETENTION_ADVICE_DAYS:
+        notes.append("cleanupPeriodDays is %s%s: Claude Code deletes session transcripts older than that."
+                     % (days, " (the default)" if "cleanupPeriodDays" not in settings else ""))
+    if isinstance(desk, (int, float)) and desk < RETENTION_ADVICE_DAYS:
+        notes.append("desktopSessionCleanupPeriodDays is %s: desktop and routine transcripts expire too." % desk)
+    if notes:
+        notes.append('To keep your history, set "cleanupPeriodDays": 3650 in ~/.claude/settings.json '
+                     "and prune routine runs with this skill instead.")
+    return notes
 
 
 def load_config():
@@ -197,7 +228,7 @@ def artifacts(rec):
         if os.path.isdir(side):
             paths.append(side)  # tool-results/, subagents/
     if cli:
-        for sub in ("session-env", "tasks"):
+        for sub in ("session-env", "tasks", "file-history"):
             d = os.path.join(cd, sub, cli)
             if os.path.isdir(d):
                 paths.append(d)
@@ -409,6 +440,7 @@ def main(argv=None):
             "skipped": {"current": [d.get("sessionId") for d in skipped_current],
                         "recentlyActive": [d.get("sessionId") for d in skipped_live]},
             "selected": {"count": len(ids), "bytes": freed, "batches": batches},
+            "retentionNotes": retention_note(),
         }, indent=2))
         return 0
 
@@ -450,6 +482,9 @@ def main(argv=None):
         if buckets[b] and not will[b]:
             print("  (%d %s run(s) protected; %s selects them)" % (len(buckets[b]), b, flags[b]))
     print("\nPLAN ONLY: nothing was deleted. Deletion goes through the app's delete_session tool.")
+    notes = retention_note()
+    if notes:
+        print("\nRETENTION: " + "\n           ".join(notes))
     if args.ids and batches:
         print("\nSESSION ID BATCHES (%d ids, %d batches):" % (len(ids), len(batches)))
         for bt in batches:

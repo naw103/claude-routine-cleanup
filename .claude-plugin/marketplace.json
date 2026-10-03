@@ -1,0 +1,16 @@
+{
+  "name": "routine-cleanup",
+  "owner": {
+    "name": "Nick Woodhead",
+    "url": "https://github.com/naw103"
+  },
+  "description": "Routine Cleanup: prune old Claude Code scheduled-task runs safely.",
+  "plugins": [
+    {
+      "name": "routine-cleanup",
+      "source": "./",
+      "description": "Bulk-delete old runs of a Claude Code scheduled task (routine), keeping the newest N and every run you replied in.",
+      "version": "1.0.0"
+    }
+  ]
+}

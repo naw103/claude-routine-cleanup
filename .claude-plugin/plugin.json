@@ -1,0 +1,14 @@
+{
+  "name": "routine-cleanup",
+  "displayName": "Routine Cleanup",
+  "version": "1.0.0",
+  "description": "Bulk-delete old runs of a Claude Code scheduled task (routine) in the Claude desktop app, keeping the newest N and every run you replied in.",
+  "author": {
+    "name": "Nick Woodhead",
+    "url": "https://github.com/naw103"
+  },
+  "homepage": "https://github.com/naw103/claude-routine-cleanup",
+  "repository": "https://github.com/naw103/claude-routine-cleanup",
+  "license": "MIT",
+  "keywords": ["claude-code", "scheduled-tasks", "routines", "cleanup", "sessions", "skill"]
+}

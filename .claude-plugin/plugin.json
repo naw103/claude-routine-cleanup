@@ -11,6 +11,7 @@
   "repository": "https://github.com/naw103/claude-routine-cleanup",
   "documentationUrl": "https://github.com/naw103/claude-routine-cleanup#readme",
   "supportUrl": "https://github.com/naw103/claude-routine-cleanup/issues",
+  "privacyPolicyUrl": "https://github.com/naw103/claude-routine-cleanup#privacy",
   "license": "MIT",
   "keywords": ["claude-code", "scheduled-tasks", "routines", "cleanup", "sessions", "skill"]
 }

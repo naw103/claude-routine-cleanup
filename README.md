@@ -184,6 +184,15 @@ python3 -m unittest discover -s tests -v
 claude plugin validate . --strict
 ```
 
+## Privacy
+
+Routine Cleanup runs entirely on your machine. It has no server, no analytics and no network calls.
+
+- **What it reads:** your Claude settings (`~/.claude/settings.json`, plus `~/.claude/routine-cleanup.json` if you create one), the desktop app's records of routine runs, and each run's transcript. It reads transcripts only to count runs and to see whether a person typed in them.
+- **What it writes:** nothing, unless you pass `--ids-file`, which saves the list of run ids it plans to delete to the path you choose.
+- **What it sends:** nothing. Deletion goes through the Claude desktop app's own session tool, which asks you to approve each batch.
+- **What it keeps:** nothing. No data leaves your computer, and the plugin stores none.
+
 ## License
 
 MIT. Not affiliated with Anthropic.
